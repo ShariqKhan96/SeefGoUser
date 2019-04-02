@@ -1,12 +1,14 @@
 package com.webxert.seefgouser;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -328,10 +330,28 @@ public class Home extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ConstantManager.CURRENT_LATLNG == null) {
+            final ProgressDialog dialog = new ProgressDialog(Home.this);
+            dialog.setTitle("Please Wait");
+            dialog.setMessage("Getting your location");
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.dismiss();
+                    LatLng sydney = new LatLng(ConstantManager.CURRENT_LATLNG.latitude, ConstantManager.CURRENT_LATLNG.longitude);
+                    mMap.addMarker(new MarkerOptions().position(sydney).title("You"));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+
+                }
+            }, 1500);
+        } else {
+            LatLng sydney = new LatLng(ConstantManager.CURRENT_LATLNG.latitude, ConstantManager.CURRENT_LATLNG.longitude);
+            mMap.addMarker(new MarkerOptions().position(sydney).title("You"));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+        }
     }
 
     @Override
