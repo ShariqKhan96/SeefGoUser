@@ -55,6 +55,8 @@
         <activity android:name=".ParcelsActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".HelpActivity"></activity>
+
+        <service android:name=".services.LocationService"/>
     </application>
 
 </manifest>

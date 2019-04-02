@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText emailET, passwordET;
-    FrameLayout loginBT;
-    TextView noAccountTV;
+        EditText emailET, passwordET;
+        FrameLayout loginBT;
+        TextView noAccountTV;
 
 
     @Override
