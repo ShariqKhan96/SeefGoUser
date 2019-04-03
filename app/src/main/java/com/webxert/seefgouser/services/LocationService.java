@@ -59,8 +59,8 @@ public class LocationService extends Service {
 
     private void requestLocationUpdates() {
         request = new LocationRequest();
-       // Random r = new Random();
-        int intervalTime = ThreadLocalRandom.current().nextInt(10000, 20000);
+        // Random r = new Random();
+        int intervalTime = ThreadLocalRandom.current().nextInt(5000, 7000);
         // int intervalTime = r.nextInt(7000 - 5000) + 5000;
         int fastestInterval = intervalTime - ThreadLocalRandom.current().nextInt(2000, 3000);
         Log.e("intervals", "fastest " + fastestInterval + " intervalTime " + intervalTime);
@@ -74,7 +74,6 @@ public class LocationService extends Service {
 
         int permission = ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION);
-
 
 
         if (permission == PackageManager.PERMISSION_GRANTED) {

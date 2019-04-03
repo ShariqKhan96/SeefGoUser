@@ -95,7 +95,7 @@ public class FormActivity extends AppCompatActivity {
                     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
                         yFt = numberPicker.getValue();
 
-                        size.setText(xFt + " x " + yFt);
+                        size.setText("0 x 0");
 
 
                     }
@@ -120,6 +120,12 @@ public class FormActivity extends AppCompatActivity {
         toolbarTv.setText("Parcel Details");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private boolean validateFields() {

@@ -148,8 +148,6 @@ public class Home extends AppCompatActivity
         name.setText(getSharedPreferences(ConstantManager.SHARED_PREFERENCES, MODE_PRIVATE).getString(ConstantManager.NAME, "Shariq Khan"));
         email.setText(getSharedPreferences(ConstantManager.SHARED_PREFERENCES, MODE_PRIVATE).getString(ConstantManager.EMAIL, "Shariqmack@gmail.com"));
 
-        checkForPermissions();
-
 
 //
 //        dropOffET = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -311,10 +309,16 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_packages) {
+            Intent intent = new Intent(this, ParcelsActivity.class);
+            startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_notificaitons) {
+            Intent intent = new Intent(this, NotificationsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_help) {
 
@@ -341,12 +345,29 @@ public class Home extends AppCompatActivity
                 @Override
                 public void run() {
                     dialog.dismiss();
-                    LatLng sydney = new LatLng(ConstantManager.CURRENT_LATLNG.latitude, ConstantManager.CURRENT_LATLNG.longitude);
-                    mMap.addMarker(new MarkerOptions().position(sydney).title("You"));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+                    if (ConstantManager.CURRENT_LATLNG == null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+                        builder.setTitle("Warning");
+                        int permission = ContextCompat.checkSelfPermission(Home.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                        if (permission == PackageManager.PERMISSION_GRANTED)
+                            builder.setMessage("App will misbehave due to denial of requested permissions completely!");
+                        else builder.setMessage("Slow internet connection");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                    } else {
+
+                        LatLng sydney = new LatLng(ConstantManager.CURRENT_LATLNG.latitude, ConstantManager.CURRENT_LATLNG.longitude);
+                        mMap.addMarker(new MarkerOptions().position(sydney).title("You"));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+                    }
 
                 }
-            }, 1500);
+            }, 0);
         } else {
             LatLng sydney = new LatLng(ConstantManager.CURRENT_LATLNG.latitude, ConstantManager.CURRENT_LATLNG.longitude);
             mMap.addMarker(new MarkerOptions().position(sydney).title("You"));
