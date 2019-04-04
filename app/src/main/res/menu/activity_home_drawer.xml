@@ -11,8 +11,8 @@
 
         <item
             android:id="@+id/nav_notificaitons"
-            android:icon="@drawable/notifications"
-            android:title="My Notifications" />
+            android:icon="@drawable/track_order"
+            android:title="Track Orders" />
 
         <item
             android:id="@+id/nav_profile"

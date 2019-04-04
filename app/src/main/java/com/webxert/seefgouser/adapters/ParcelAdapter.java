@@ -37,21 +37,21 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
     @Override
     public void onBindViewHolder(@NonNull MyVH myVH, int i) {
         Parcel parcel = parcels.get(i);
-        myVH.price.setText(parcel.getPrice());
-        myVH.source.setText("From: " + parcel.getSource());
-        myVH.destination.setText("To: " + parcel.getDestination());
-        myVH.date.setText(parcel.getDate());
-        myVH.itemname.setText(parcel.getName());
-        myVH.status.setText(parcel.getStatus());
+        myVH.price.setText(parcel.getPrice_range());
+        myVH.source.setText("From: " + parcel.getStart_point());
+        myVH.destination.setText("To: " + parcel.getEnd_point());
+        myVH.date.setText(parcel.getDate_time());
+        myVH.itemname.setText(parcel.getPackage_name());
 
-        if (parcel.getStatus().equals("0")) {
+
+        if (parcel.getPackage_status().equals("1")) {
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.pending_round_view));
-            myVH.status.setText("Not Delivered");
+            myVH.status.setText("Not Accepted");
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        } else if (parcel.getStatus().equals("1")) {
+        } else if (parcel.getPackage_status().equals("2")) {
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.accept_round_view));
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            myVH.status.setText("Delivered");
+            myVH.status.setText("Accepted");
 
         }
 

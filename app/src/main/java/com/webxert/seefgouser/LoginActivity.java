@@ -1,11 +1,13 @@
 package com.webxert.seefgouser;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -13,15 +15,31 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
 import com.webxert.seefgouser.common.Common;
+import com.webxert.seefgouser.common.ConstantManager;
+import com.webxert.seefgouser.models.User;
+import com.webxert.seefgouser.network.VolleySingleton;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import io.paperdb.Paper;
 
 public class LoginActivity extends AppCompatActivity {
 
-        EditText emailET, passwordET;
-        FrameLayout loginBT;
-        TextView noAccountTV;
+    EditText emailET, passwordET;
+    FrameLayout loginBT;
+    TextView noAccountTV;
 
 
     @Override
@@ -41,9 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (checkForEmptyFields(emailET.getText().toString().trim(), passwordET.getText().toString().trim())) {
                     if (checkValidEmail(emailET.getText().toString().trim())) {
                         if (checkValidPassword(passwordET.getText().toString().trim())) {
-                            Common.savePrefs(emailET.getText().toString(), passwordET.getText().toString(), LoginActivity.this);
-                            startActivity(new Intent(LoginActivity.this, Home.class));
-                            finish();
+                            callService();
                         } else {
                             showAlertBox("Password should not less than 6 letters");
                         }
@@ -94,5 +110,54 @@ public class LoginActivity extends AppCompatActivity {
         passwordET = findViewById(R.id.password);
         loginBT = findViewById(R.id.login_button);
         noAccountTV = findViewById(R.id.no_account);
+    }
+
+    private void callService() {
+
+
+        final ProgressDialog dialog = new ProgressDialog(LoginActivity.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle("Authenticating");
+        dialog.setMessage("Please Wait");
+        dialog.show();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ConstantManager.BASE_URL + "userlogin.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+                        try {
+                            JSONObject root = new JSONObject(response);
+                            if (root.getString("status").equals("1")) {
+                                User user = new Gson().fromJson(root.getJSONObject("user").toString(), User.class);
+                                Paper.book().write(ConstantManager.CURRENT_USER, user);
+                                Common.savePrefs(emailET.getText().toString(), passwordET.getText().toString(), LoginActivity.this);
+                                startActivity(new Intent(LoginActivity.this, Home.class));
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "" + root.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSONException", e.getMessage());
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dialog.dismiss();
+                        Toast.makeText(LoginActivity.this, "" + error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("email", emailET.getText().toString());
+                map.put("pass", passwordET.getText().toString());
+                return map;
+            }
+        };
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+
     }
 }

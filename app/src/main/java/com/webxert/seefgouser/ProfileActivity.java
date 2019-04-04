@@ -10,8 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.webxert.seefgouser.common.ConstantManager;
 import com.webxert.seefgouser.interfaces.EditButtonListener;
 import com.webxert.seefgouser.interfaces.ProceedVisibilityListener;
+import com.webxert.seefgouser.models.User;
+
+import io.paperdb.Paper;
 
 public class ProfileActivity extends AppCompatActivity implements EditButtonListener {
 
@@ -44,10 +48,15 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
         edit = toolbar.findViewById(R.id.edit);
         submit_btn = findViewById(R.id.submit_btn);
 
+        User user = Paper.book().read(ConstantManager.CURRENT_USER);
+        nameET.setText(user.getUser_name());
+        emailET.setText(user.getUser_email());
+        passwordET.setText("(md5)=>" + user.getUser_password());
+
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ProfileActivity.this, "TODO send fields", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "TODO UPDATE API INTEGRATION", Toast.LENGTH_LONG).show();
             }
         });
 

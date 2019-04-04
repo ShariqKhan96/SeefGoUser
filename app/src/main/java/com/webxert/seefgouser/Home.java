@@ -27,6 +27,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -42,10 +47,26 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.webxert.seefgouser.common.Common;
 import com.webxert.seefgouser.common.ConstantManager;
 import com.webxert.seefgouser.interfaces.ProceedVisibilityListener;
+import com.webxert.seefgouser.models.User;
+import com.webxert.seefgouser.models.Warehouse;
+import com.webxert.seefgouser.network.VolleySingleton;
 import com.webxert.seefgouser.services.LocationService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.paperdb.Paper;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ProceedVisibilityListener {
@@ -54,13 +75,15 @@ public class Home extends AppCompatActivity
     private static final int REQUEST_CHECK_SETTINGS = 1000;
     //    PlaceAutocompleteFragment dropOffET;
 //    Place dropOffPlace;
-    String warehouse_1_Names[] = {"Karachi", "Lahore", "Islamabad", "Multan", "Kashmir"};
-    String warehouse_2_Names[] = {"Karachi", "Lahore", "Islamabad", "Multan", "Kashmir"};
+    String warehouse_1_Names[];
+    String warehouse_Ids[];
+    //String warehouse_2_Names[] = {"Karachi", "Lahore", "Islamabad", "Multan", "Kashmir"};
+
     FrameLayout proceedBtn, wareHouse1Btn, warehouse2Btn;
     TextView warehouse1TV;
     TextView warehouse2TV;
     ProceedVisibilityListener proceedVisibilityListener;
-    String selectedFromWarehouse, selectedToWareshouse;
+    String selectedFromWarehouse, selectedToWareshouse, source, destination;
     private TextView name;
     private TextView email;
 
@@ -73,12 +96,17 @@ public class Home extends AppCompatActivity
         setSupportActionBar(toolbar);
         initUi();
         registerCallBacks();
+
+        getWarehouses();
+
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Home.this, FormActivity.class);
                 intent.putExtra("warehouse_one", selectedFromWarehouse);
                 intent.putExtra("warehouse_two", selectedToWareshouse);
+                intent.putExtra("source", source);
+                intent.putExtra("destination", destination);
                 startActivity(intent);
 
 
@@ -92,8 +120,9 @@ public class Home extends AppCompatActivity
                 dialog.setItems(warehouse_1_Names, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        source = warehouse_Ids[i];
                         selectedFromWarehouse = warehouse_1_Names[i];
-                        warehouse1TV.setText(selectedFromWarehouse);
+                        warehouse1TV.setText(warehouse_1_Names[i]);
                         dialogInterface.dismiss();
 
                     }
@@ -106,11 +135,12 @@ public class Home extends AppCompatActivity
             public void onClick(View view) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this);
                 dialog.setTitle("Select Warehouse");
-                dialog.setItems(warehouse_2_Names, new DialogInterface.OnClickListener() {
+                dialog.setItems(warehouse_1_Names, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedToWareshouse = warehouse_2_Names[i];
-                        warehouse2TV.setText(selectedToWareshouse);
+                        destination = warehouse_Ids[i];
+                        selectedToWareshouse = warehouse_1_Names[i];
+                        warehouse2TV.setText(warehouse_1_Names[i]);
                         dialogInterface.dismiss();
 
                         if ((!selectedFromWarehouse.isEmpty() && !selectedFromWarehouse.equals("")) &&
@@ -164,6 +194,49 @@ public class Home extends AppCompatActivity
 //
 //            }
 //        });
+    }
+
+    private void getWarehouses() {
+        final ProgressDialog dialog = new ProgressDialog(Home.this, R.style.MyAlertDialogStyle);
+        dialog.setTitle("Getting warehouses");
+        dialog.setMessage("Please Wait");
+        dialog.show();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ConstantManager.BASE_URL + "warehouse.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+
+                        try {
+                            JSONArray array = new JSONArray(response);
+                            warehouse_1_Names = new String[array.length()];
+                            warehouse_Ids = new String[array.length()];
+                            for (int i = 0; i < array.length(); i++) {
+                                Warehouse warehouse = new Gson().fromJson(array.getJSONObject(i).toString(), Warehouse.class);
+                                warehouse_1_Names[i] = warehouse.getWarehouse_name();
+                                warehouse_Ids[i] = warehouse.getWarehouse_id();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        Gson gson = new Gson();
+//                        Type listType = new TypeToken<List<Warehouse>>() {
+//                        }.getType();
+//                        List<Warehouse> warehouses = gson.fromJson(response, listType);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dialog.dismiss();
+                        Toast.makeText(Home.this, "" + error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+
+        };
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     private void checkForPermissions() {
@@ -307,8 +380,9 @@ public class Home extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_notificaitons) {
-            Intent intent = new Intent(this, NotificationsActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(this, NotificationsActivity.class);
+//            startActivity(intent);
+            Toast.makeText(this, "Will be added later", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
