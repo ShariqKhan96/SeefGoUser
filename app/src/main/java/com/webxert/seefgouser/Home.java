@@ -169,8 +169,10 @@ public class Home extends AppCompatActivity
         name = headerView.findViewById(R.id.name);
         email = headerView.findViewById(R.id.email);
 
-        name.setText(getSharedPreferences(ConstantManager.SHARED_PREFERENCES, MODE_PRIVATE).getString(ConstantManager.NAME, "Shariq Khan"));
-        email.setText(getSharedPreferences(ConstantManager.SHARED_PREFERENCES, MODE_PRIVATE).getString(ConstantManager.EMAIL, "Shariqmack@gmail.com"));
+        User user = Paper.book().read(ConstantManager.CURRENT_USER);
+
+        name.setText(user.getUser_name());
+        email.setText(user.getUser_email());
 
 
 //
