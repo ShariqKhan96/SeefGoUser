@@ -46,7 +46,6 @@ public class FormActivity extends AppCompatActivity {
     String approxWeights[];
     String price[];
     String ids[];
-
     int xFt = 1, yFt = 1;
     String selectedWeight;
     FrameLayout submit_btn;
@@ -91,7 +90,7 @@ public class FormActivity extends AppCompatActivity {
                     final EditText myCmntET = myView.findViewById(R.id.comment_et);
                     TextView priceTv = myView.findViewById(R.id.price_tv);
 
-                    priceTv.setText(Html.fromHtml("Estimate delivery amount : <b>" + (Integer.valueOf(pickedPrice) * 500) + "</b> Rs"));
+                    priceTv.setText(Html.fromHtml("Estimate delivery amount : <b>" + (Integer.valueOf(pickedPrice) * 12) + "</b> Rs"));
                     alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -286,6 +285,7 @@ $com     = $_POST['comment'];
                 map.put("weight", selectedWeight);
                 map.put("comment", comment);
                 map.put("userid", user.getUser_id());
+                map.put("price", pickedPrice);
 
 
                 return map;

@@ -127,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                         dialog.dismiss();
                         try {
                             JSONObject root = new JSONObject(response);
+
                             if (root.getString("status").equals("1")) {
                                 User user = new Gson().fromJson(root.getJSONObject("user").toString(), User.class);
                                 Paper.book().write(ConstantManager.CURRENT_USER, user);

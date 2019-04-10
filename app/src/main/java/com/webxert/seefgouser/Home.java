@@ -32,6 +32,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -47,6 +48,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.webxert.seefgouser.common.Common;
@@ -87,6 +92,8 @@ public class Home extends AppCompatActivity
     private TextView name;
     private TextView email;
 
+    User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +103,10 @@ public class Home extends AppCompatActivity
         setSupportActionBar(toolbar);
         initUi();
         registerCallBacks();
-
         getWarehouses();
 
+        user = Paper.book().read(ConstantManager.CURRENT_USER);
+        updateTokenToServer(FirebaseInstanceId.getInstance().getInstanceId());
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -269,6 +277,43 @@ public class Home extends AppCompatActivity
                 Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void updateTokenToServer(Task<InstanceIdResult> instanceIdResultTask) {
+        instanceIdResultTask.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (task.isSuccessful()) {
+                    final String token = task.getResult().getToken();
+
+                    Log.e("TOKEN:", task.getResult().getToken() + " to be updated!");
+                    StringRequest request = new StringRequest(Request.Method.POST, ConstantManager.BASE_URL + "usertoken.php", new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.e("RESPONSE :", response);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(Home.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> map = new HashMap<>();
+                            map.put("id", user.getUser_id());
+                            map.put("token", token);
+                            return map;
+                        }
+                    };
+                    Volley.newRequestQueue(Home.this).add(request);
+                } else {
+                    Log.e("TOKENFailed :", task.getException().getMessage());
+                }
+            }
+        });
+
+
     }
 
     private void displayLocationSettingsRequest(Context context) {
