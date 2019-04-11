@@ -61,6 +61,7 @@ import com.webxert.seefgouser.models.User;
 import com.webxert.seefgouser.models.Warehouse;
 import com.webxert.seefgouser.network.VolleySingleton;
 import com.webxert.seefgouser.services.LocationService;
+import com.webxert.seefgouser.services.LocationUpdatePriveder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +107,8 @@ public class Home extends AppCompatActivity
         getWarehouses();
 
         user = Paper.book().read(ConstantManager.CURRENT_USER);
+
+
         updateTokenToServer(FirebaseInstanceId.getInstance().getInstanceId());
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +186,8 @@ public class Home extends AppCompatActivity
         email.setText(user.getUser_email());
 
 
+        //switchServices();
+
 //
 //        dropOffET = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 //        dropOffET.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
@@ -204,6 +209,11 @@ public class Home extends AppCompatActivity
 //
 //            }
 //        });
+    }
+
+    private void switchServices() {
+        stopService(new Intent(this, LocationService.class));
+        startService(new Intent(this, LocationUpdatePriveder.class));
     }
 
     private void getWarehouses() {
@@ -446,16 +456,17 @@ public class Home extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_notificaitons) {
-//            Intent intent = new Intent(this, NotificationsActivity.class);
-//            startActivity(intent);
-            Toast.makeText(this, "Will be added later", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, NotificationsActivity.class);
+            startActivity(intent);
+
 
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_help) {
-
+            Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
         }
 
 

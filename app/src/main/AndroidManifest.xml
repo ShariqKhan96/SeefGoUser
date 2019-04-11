@@ -8,6 +8,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -55,7 +56,6 @@
         <activity android:name=".NotificationsActivity" />
         <activity android:name=".ParcelsActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".HelpActivity"></activity>
 
         <service android:name=".services.LocationService"/>
 

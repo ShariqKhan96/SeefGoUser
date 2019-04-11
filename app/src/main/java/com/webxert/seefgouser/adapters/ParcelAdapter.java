@@ -43,16 +43,23 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
         myVH.date.setText(parcel.getDate_time());
         myVH.itemname.setText(parcel.getPackage_name());
 
-
-        if (parcel.getPackage_status().equals("1")) {
+        if (parcel.getPackage_status().equals("0")) {
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.pending_round_view));
-            myVH.status.setText("Not Accepted");
+            myVH.status.setText("Order placed");
+            myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        } else if (parcel.getPackage_status().equals("1")) {
+            myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.accept_round_view));
+            myVH.status.setText("Driver Assigned");
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         } else if (parcel.getPackage_status().equals("2")) {
+            myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.pending_round_view));
+            myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            myVH.status.setText("In transit");
+
+        } else {
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.accept_round_view));
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            myVH.status.setText("Accepted");
-
+            myVH.status.setText("Parcel delivered");
         }
 
 
