@@ -11,28 +11,38 @@ public class Parcel {
     public String date_time;
     public String start_point;
     public String package_comment;
-    public String package_status;
     public String weight_range;
     public String price_range;
     public String end_point;
     public String status;
+    public String package_price;
 
     public Parcel() {
 
     }
 
-    public Parcel(String package_name, String package_width, String package_height, String date_time, String start_point, String package_comment, String package_status, String weight_range, String price_range, String end_point, String status) {
+    public Parcel(String package_name, String package_width, String package_height, String date_time, String start_point, String package_comment,String weight_range, String price_range, String end_point, String status, String package_price) {
         this.package_name = package_name;
         this.package_width = package_width;
         this.package_height = package_height;
         this.date_time = date_time;
         this.start_point = start_point;
         this.package_comment = package_comment;
-        this.package_status = package_status;
         this.weight_range = weight_range;
         this.price_range = price_range;
         this.end_point = end_point;
         this.status = status;
+        this.package_price = package_price;
+    }
+
+
+
+    public String getPackage_price() {
+        return package_price;
+    }
+
+    public void setPackage_price(String package_price) {
+        this.package_price = package_price;
     }
 
     public String getPackage_name() {
@@ -81,14 +91,6 @@ public class Parcel {
 
     public void setPackage_comment(String package_comment) {
         this.package_comment = package_comment;
-    }
-
-    public String getPackage_status() {
-        return package_status;
-    }
-
-    public void setPackage_status(String package_status) {
-        this.package_status = package_status;
     }
 
     public String getWeight_range() {

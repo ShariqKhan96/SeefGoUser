@@ -311,6 +311,7 @@ public class Home extends AppCompatActivity
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String, String> map = new HashMap<>();
+                            Log.e("id", user.getUser_id());
                             map.put("id", user.getUser_id());
                             map.put("token", token);
                             return map;
@@ -440,6 +441,8 @@ public class Home extends AppCompatActivity
 
 
             return true;
+        } else if (id == R.id.refresh) {
+            recreate();
         }
 
         return super.onOptionsItemSelected(item);
@@ -452,10 +455,16 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_packages) {
+
+              /*          Parcel === Opportunity          */
+
             Intent intent = new Intent(this, ParcelsActivity.class);
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_notificaitons) {
+
+            /*          Noitifacation === Trackorder          */
+
             Intent intent = new Intent(this, NotificationsActivity.class);
             startActivity(intent);
 

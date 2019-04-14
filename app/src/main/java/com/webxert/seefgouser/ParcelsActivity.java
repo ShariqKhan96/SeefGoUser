@@ -1,6 +1,7 @@
 package com.webxert.seefgouser;
 
 import android.app.ProgressDialog;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,12 +46,20 @@ public class ParcelsActivity extends AppCompatActivity {
     FrameLayout no_records;
     User user;
 
+    SwipeRefreshLayout swipe_layout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parcels);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
+        swipe_layout = findViewById(R.id.swipe_layout);
+        int Colors[] = {android.R.color.holo_red_dark, android.R.color.holo_orange_light};
+        swipe_layout.setColorSchemeResources(Colors);
+
         TextView toolbarTv = toolbar.findViewById(R.id.toolbarText);
         toolbarTv.setText("Parcel History");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,6 +77,12 @@ public class ParcelsActivity extends AppCompatActivity {
         //  parcelList.setAdapter(new ParcelAdapter(parcels, this));
         getList();
 
+        swipe_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getList();
+            }
+        });
 
     }
 
@@ -75,14 +90,17 @@ public class ParcelsActivity extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(ParcelsActivity.this, R.style.MyAlertDialogStyle);
         dialog.setTitle("Getting parcels");
         dialog.setMessage("Please Wait");
-        dialog.show();
-
+        // dialog.show();
+        swipe_layout.setRefreshing(true);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ConstantManager.BASE_URL + "userhistory.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        dialog.dismiss();
+                        //   dialog.dismiss();
+
+                        swipe_layout.setRefreshing(false);
                         try {
+                            Log.e("PARCELS: ", response);
                             JSONArray array = new JSONArray(response);
                             if (array.length() > 0) {
                                 Gson gson = new Gson();
