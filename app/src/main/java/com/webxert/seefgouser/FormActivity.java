@@ -2,12 +2,14 @@ package com.webxert.seefgouser;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -90,6 +92,7 @@ public class FormActivity extends AppCompatActivity {
                     final EditText myCmntET = myView.findViewById(R.id.comment_et);
                     TextView priceTv = myView.findViewById(R.id.price_tv);
 
+                    pickedPrice = String.valueOf(Integer.valueOf(pickedPrice) * 12);
                     priceTv.setText(Html.fromHtml("Estimate delivery amount : <b>" + (Integer.valueOf(pickedPrice) * 12) + "</b> Rs"));
                     alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                         @Override
@@ -285,7 +288,8 @@ $com     = $_POST['comment'];
                 map.put("weight", selectedWeight);
                 map.put("comment", comment);
                 map.put("userid", user.getUser_id());
-                map.put("price", pickedPrice);
+              //  Log.e("Price", pickedPrice);
+                map.put("price", String.valueOf(Integer.parseInt(pickedPrice) * 12));
 
 
                 return map;

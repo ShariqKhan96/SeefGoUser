@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.webxert.seefgouser.common.ConstantManager;
@@ -30,6 +31,8 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     String s_lat, s_lng, d_lat, d_lng, driver_id;
     HashMap<String, Marker> markers = new HashMap<>();
     ProgressDialog dialog;
+    ValueEventListener valueEventListener;
+    DatabaseReference driversRef;
 
 
     @Override
@@ -51,6 +54,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
         d_lng = getIntent().getStringExtra("end_long");
         driver_id = getIntent().getStringExtra("driver_id");
 
+        driversRef = FirebaseDatabase.getInstance().getReference(ConstantManager.DRIVER_DB_NAME).child(driver_id);
 
     }
 
@@ -75,12 +79,15 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
         markers.put("SOURCE", mMap.addMarker(new MarkerOptions().position(source).title("Source")));
         markers.put("DEST", mMap.addMarker(new MarkerOptions().position(destination).title("Destination")));
         Log.e("KEY", FirebaseDatabase.getInstance().getReference(ConstantManager.DRIVER_DB_NAME).getKey());
+
         Log.e("DRIVER_ID", driver_id);
-        FirebaseDatabase.getInstance().getReference(ConstantManager.DRIVER_DB_NAME).child(driver_id).addValueEventListener(new ValueEventListener() {
+
+        driversRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dialog.isShowing())
                     dialog.dismiss();
+                valueEventListener = this;
                 Log.e("datasnapshot", dataSnapshot.toString());
                 DriverLatLng latLng = dataSnapshot.getValue(DriverLatLng.class);
                 // LatLng lll = dataSnapshot.getValue(LatLng.class);
@@ -103,5 +110,11 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
 
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        driversRef.removeEventListener(valueEventListener);
     }
 }
