@@ -96,7 +96,11 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                 if (!markers.containsKey(driver_id)) {
                     markers.put(driver_id, mMap.addMarker(new MarkerOptions().position(d_latlng).title("Driver").snippet(driver_id).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
 
-                } else markers.get(driver_id).setPosition(d_latlng);
+                    Log.e("MARKERADDED: ", markers.containsKey(driver_id) + "");
+                } else {
+                    markers.get(driver_id).setPosition(d_latlng);
+                    Log.e("MARKERUPDATED: ", markers.containsKey(driver_id) + "");
+                }
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 for (Marker marker : markers.values()) {
                     builder.include(marker.getPosition());

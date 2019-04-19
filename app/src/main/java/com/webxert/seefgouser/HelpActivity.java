@@ -33,7 +33,6 @@ public class HelpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_help);
         send = findViewById(R.id.send);
         emailET = findViewById(R.id.messageEt);
-        email = findViewById(R.id.email);
         phone = findViewById(R.id.phone);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,7 +50,17 @@ public class HelpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (emailET.getText().toString().length() > 0) {
-                    Toast.makeText(HelpActivity.this, "Email sent!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    String addresses []= new String[]{"fypseef@gmail.com"};
+                    intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Help");
+                    intent.putExtra(Intent.EXTRA_TEXT, emailET.getText().toString());
+                    intent.setType("message/rfc822");
+
+                    startActivity(Intent.createChooser(intent, "Choose your client"));
+
+
+                    // Toast.makeText(HelpActivity.this, "Email sent!", Toast.LENGTH_SHORT).show();
                 } else
                     Toast.makeText(HelpActivity.this, "Empty message cant be send!", Toast.LENGTH_SHORT).show();
 

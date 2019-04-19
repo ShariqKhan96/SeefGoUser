@@ -6,5 +6,6 @@
     <color name="textColor">#ffffff</color>
     <color name="hintColor">#88ffffff</color>
     <color name="accentHintColor">#603C638B</color>
+    <color name="alert">#FFAC200A</color>
 
 </resources>

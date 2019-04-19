@@ -7,7 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.webxert.seefgouser.R;
 import com.webxert.seefgouser.models.Parcel;
@@ -44,19 +46,23 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
         myVH.itemname.setText(parcel.getPackage_name());
 
         if (parcel.getStatus().equals("0")) {
+            myVH.cancel.setVisibility(View.VISIBLE);
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.declined));
             myVH.status.setText("Order placed");
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         } else if (parcel.getStatus().equals("1")) {
+            myVH.cancel.setVisibility(View.GONE);
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.accept_round_view));
             myVH.status.setText("Driver Assigned");
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         } else if (parcel.getStatus().equals("2")) {
+            myVH.cancel.setVisibility(View.GONE);
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.pending_round_view));
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             myVH.status.setText("In transit");
 
         } else {
+            myVH.cancel.setVisibility(View.GONE);
             myVH.status.setBackground(ContextCompat.getDrawable(context, R.drawable.accept_round_view));
             myVH.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             myVH.status.setText("Parcel delivered");
@@ -72,9 +78,12 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
 
     public class MyVH extends RecyclerView.ViewHolder {
         TextView source, destination, itemname, date, price, status;
+        FrameLayout cancel;
+
 
         public MyVH(@NonNull View itemView) {
             super(itemView);
+            cancel = itemView.findViewById(R.id.cancel_order);
             status = itemView.findViewById(R.id.status);
             source = itemView.findViewById(R.id.source);
             destination = itemView.findViewById(R.id.destination);
@@ -82,6 +91,14 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
             date = itemView.findViewById(R.id.date);
             price = itemView.findViewById(R.id.price);
 
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    parcels.remove(getAdapterPosition());
+                    Toast.makeText(context, "Order cancelled!", Toast.LENGTH_SHORT).show();
+                    notifyDataSetChanged();
+                }
+            });
 
         }
     }

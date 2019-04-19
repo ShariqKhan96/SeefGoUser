@@ -91,9 +91,10 @@ public class FormActivity extends AppCompatActivity {
                     alert.setView(myView);
                     final EditText myCmntET = myView.findViewById(R.id.comment_et);
                     TextView priceTv = myView.findViewById(R.id.price_tv);
+                    int price = Integer.valueOf(pickedPrice) * (xFt * yFt);
+                    pickedPrice = price + "";
 
-                    pickedPrice = String.valueOf(Integer.valueOf(pickedPrice) * 12);
-                    priceTv.setText(Html.fromHtml("Estimate delivery amount : <b>" + (Integer.valueOf(pickedPrice) * 12) + "</b> Rs"));
+                    priceTv.setText(Html.fromHtml("Estimate delivery amount : <b>" + price + "</b> Rs"));
                     alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -128,6 +129,9 @@ public class FormActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         selectedWeight = ids[i];
                         pickedPrice = price[i];
+                        // pickedPrice = String.valueOf(xFt * yFt * Integer.valueOf(pickedPrice));
+
+                        Log.e("PICKED :", pickedPrice);
                         weight.setText(approxWeights[i]);
                         dialogInterface.dismiss();
                         if (!name.getText().toString().isEmpty() && !weight.getText().toString().isEmpty())
@@ -158,6 +162,9 @@ public class FormActivity extends AppCompatActivity {
                     @Override
                     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
                         xFt = numberPicker.getValue();
+                        size.setText(xFt + " x " + yFt);
+                        //    pickedPrice = String.valueOf(xFt * yFt * Integer.valueOf(pickedPrice));
+                        //  Log.e("PICKED :", pickedPrice);
                     }
                 });
                 yAxis.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -166,8 +173,8 @@ public class FormActivity extends AppCompatActivity {
                         yFt = numberPicker.getValue();
 
                         size.setText(xFt + " x " + yFt);
-
-
+                        //   pickedPrice = String.valueOf(xFt * yFt * Integer.valueOf(pickedPrice));
+                        //   Log.e("PICKED :", pickedPrice);
                     }
                 });
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -220,6 +227,7 @@ public class FormActivity extends AppCompatActivity {
 
                         for (int i = 0; i < weights.size(); i++) {
                             price[i] = weights.get(i).getPrice_range();
+                            Log.e("PRICES: " + i, price[i]);
                             ids[i] = weights.get(i).getWeight_id();
                             approxWeights[i] = weights.get(i).getWeight_range();
                         }
@@ -251,8 +259,14 @@ public class FormActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         dialog.dismiss();
                         try {
+                            Log.e("RESPONSE: ", response);
+
                             JSONObject root = new JSONObject(response);
+
                             Toast.makeText(FormActivity.this, "" + root.getString("message"), Toast.LENGTH_SHORT).show();
+                            if (root.getString("status").equals("1"))
+                                finish();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -280,6 +294,8 @@ $id     = $_POST['userid'];
 $weight     = $_POST['weight'];
 $com     = $_POST['comment'];
                  */
+
+
                 map.put("name", name.getText().toString());
                 map.put("width", xFt + "");
                 map.put("height", yFt + "");
@@ -288,8 +304,8 @@ $com     = $_POST['comment'];
                 map.put("weight", selectedWeight);
                 map.put("comment", comment);
                 map.put("userid", user.getUser_id());
-              //  Log.e("Price", pickedPrice);
-                map.put("price", String.valueOf(Integer.parseInt(pickedPrice) * 12));
+                Log.e("Price", pickedPrice);
+                map.put("price", pickedPrice);
 
 
                 return map;
