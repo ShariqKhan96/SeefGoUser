@@ -57,6 +57,7 @@ import com.google.gson.reflect.TypeToken;
 import com.webxert.seefgouser.common.Common;
 import com.webxert.seefgouser.common.ConstantManager;
 import com.webxert.seefgouser.interfaces.ProceedVisibilityListener;
+import com.webxert.seefgouser.interfaces.ProfileCredentialsChangedListener;
 import com.webxert.seefgouser.models.User;
 import com.webxert.seefgouser.models.Warehouse;
 import com.webxert.seefgouser.network.VolleySingleton;
@@ -75,7 +76,7 @@ import java.util.Map;
 import io.paperdb.Paper;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ProceedVisibilityListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ProceedVisibilityListener, ProfileCredentialsChangedListener {
     private static final int REQUEST = 100;
     private GoogleMap mMap;
     private static final int REQUEST_CHECK_SETTINGS = 1000;
@@ -92,6 +93,7 @@ public class Home extends AppCompatActivity
     String selectedFromWarehouse, selectedToWareshouse, source, destination;
     private TextView name;
     private TextView email;
+    public static ProfileCredentialsChangedListener profileCredentialsChangedListener;
 
     User user;
 
@@ -105,6 +107,8 @@ public class Home extends AppCompatActivity
         initUi();
         registerCallBacks();
         getWarehouses();
+
+        profileCredentialsChangedListener = this;
 
         user = Paper.book().read(ConstantManager.CURRENT_USER);
 
@@ -534,5 +538,13 @@ public class Home extends AppCompatActivity
     @Override
     public void onFieldsFilled() {
         proceedBtn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onChanged() {
+        User user = Paper.book().read(ConstantManager.CURRENT_USER);
+
+        name.setText(user.getUser_name());
+        email.setText(user.getUser_email());
     }
 }

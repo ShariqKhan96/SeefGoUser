@@ -119,21 +119,23 @@
                 />
 
             <FrameLayout
-                android:visibility="gone"
                 android:id="@+id/cancel_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/alert">
+                android:layout_margin="5dp"
+                android:background="@color/alert"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="10dp"
+                    android:layout_margin="8dp"
                     android:text="Cancel order"
                     android:textAlignment="center"
                     android:textColor="@color/textColor"
-                    android:textSize="18sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </FrameLayout>
 
 

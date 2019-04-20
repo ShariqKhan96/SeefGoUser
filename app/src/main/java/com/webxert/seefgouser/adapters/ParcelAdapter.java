@@ -1,5 +1,6 @@
 package com.webxert.seefgouser.adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -11,11 +12,23 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.webxert.seefgouser.R;
+import com.webxert.seefgouser.common.ConstantManager;
 import com.webxert.seefgouser.models.Parcel;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hp on 4/1/2019.
@@ -94,12 +107,55 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    parcels.remove(getAdapterPosition());
-                    Toast.makeText(context, "Order cancelled!", Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
+                    cancelOrder(getAdapterPosition());
                 }
             });
 
         }
+    }
+
+    private void cancelOrder(final int adapterPosition) {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setTitle("");
+        dialog.setMessage("Please wait..");
+        dialog.show();
+
+        StringRequest request = new StringRequest(Request.Method.POST, ConstantManager.BASE_URL + "cancel.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+                        try {
+                            JSONObject root = new JSONObject(response);
+                            if (root.getString("status").equals("1")) {
+                                Toast.makeText(context, "Parcel Cancelled", Toast.LENGTH_SHORT).show();
+
+                                Parcel parcel = parcels.get(adapterPosition);
+                                parcels.remove(parcel);
+                                notifyItemRemoved(adapterPosition);
+                            } else {
+                                Toast.makeText(context, "" + root.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(context, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "" + error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                // map.put("id", parcels.get(adapterPosition).)
+                return map;
+            }
+        };
+        Volley.newRequestQueue(context).add(request);
     }
 }
