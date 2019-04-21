@@ -16,12 +16,13 @@ public class Parcel {
     public String end_point;
     public String status;
     public String package_price;
+    public String package_id;
 
     public Parcel() {
 
     }
 
-    public Parcel(String package_name, String package_width, String package_height, String date_time, String start_point, String package_comment,String weight_range, String price_range, String end_point, String status, String package_price) {
+    public Parcel(String package_name, String package_width, String package_height, String date_time, String start_point, String package_comment,String weight_range, String price_range, String end_point, String status, String package_price, String package_id) {
         this.package_name = package_name;
         this.package_width = package_width;
         this.package_height = package_height;
@@ -33,9 +34,17 @@ public class Parcel {
         this.end_point = end_point;
         this.status = status;
         this.package_price = package_price;
+        this.package_id = package_id;
     }
 
 
+    public String getPackage_id() {
+        return package_id;
+    }
+
+    public void setPackage_id(String package_id) {
+        this.package_id = package_id;
+    }
 
     public String getPackage_price() {
         return package_price;

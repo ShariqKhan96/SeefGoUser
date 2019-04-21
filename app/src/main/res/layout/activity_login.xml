@@ -71,7 +71,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:textColorHint="@color/hintColor">
+                android:textColorHint="@color/hintColor"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/textColor">
 
                 <EditText
                     android:id="@+id/password"
@@ -86,6 +88,15 @@
                     />
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/remember_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/textColor"
+                android:buttonTint="@color/textColor"
+                android:text="Remember me"
+                android:textColor="@color/textColor" />
         </LinearLayout>
 
         <FrameLayout

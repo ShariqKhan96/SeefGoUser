@@ -507,7 +507,7 @@ public class Home extends AppCompatActivity
                         AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
                         builder.setTitle("Warning");
                         int permission = ContextCompat.checkSelfPermission(Home.this, Manifest.permission.ACCESS_FINE_LOCATION);
-                        if (permission == PackageManager.PERMISSION_GRANTED)
+                        if (permission != PackageManager.PERMISSION_GRANTED)
                             builder.setMessage("App will misbehave due to denial of requested permissions completely!");
                         else builder.setMessage("Slow internet connection");
                         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

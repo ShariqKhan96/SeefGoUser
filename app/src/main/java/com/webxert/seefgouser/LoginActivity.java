@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText emailET, passwordET;
     FrameLayout loginBT;
     TextView noAccountTV;
+    CheckBox remember_me;
 
 
     @Override
@@ -47,6 +50,31 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initUi();
+
+        String decider = Paper.book().read(ConstantManager.REMEMBER_ME, "null");
+        if (decider.equals("true")) {
+            remember_me.setChecked(true);
+            User user = Paper.book().read(ConstantManager.USER_DECRYPTED_OBJECT);
+            emailET.setText(user.getUser_email());
+            passwordET.setText(user.getUser_password());
+        } else
+            remember_me.setChecked(false);
+        remember_me.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    if (!TextUtils.isEmpty(emailET.getText().toString()) && !TextUtils.isEmpty(passwordET.getText().toString())) {
+                        User user = new User();
+                        Paper.book().write(ConstantManager.REMEMBER_ME, "true");
+                        user.setUser_email(emailET.getText().toString());
+                        user.setUser_password(passwordET.getText().toString());
+
+                        Paper.book().write(ConstantManager.USER_DECRYPTED_OBJECT, user);
+                    } else
+                        Toast.makeText(LoginActivity.this, "Field(s) Empty", Toast.LENGTH_SHORT).show();
+                } else Paper.book().write(ConstantManager.REMEMBER_ME, "false");
+            }
+        });
         noAccountTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordET = findViewById(R.id.password);
         loginBT = findViewById(R.id.login_button);
         noAccountTV = findViewById(R.id.no_account);
+        remember_me = findViewById(R.id.remember_me);
     }
 
     private void callService() {
@@ -131,6 +160,12 @@ public class LoginActivity extends AppCompatActivity {
                             if (root.getString("status").equals("1")) {
                                 User user = new Gson().fromJson(root.getJSONObject("user").toString(), User.class);
                                 Paper.book().write(ConstantManager.CURRENT_USER, user);
+
+                                User mUser = new User();
+                                mUser.setUser_email(emailET.getText().toString());
+                                mUser.setUser_password(passwordET.getText().toString());
+                                Paper.book().write(ConstantManager.USER_DECRYPTED_OBJECT, mUser);
+
                                 Common.savePrefs(emailET.getText().toString(), passwordET.getText().toString(), LoginActivity.this);
                                 startActivity(new Intent(LoginActivity.this, Home.class));
                                 finish();

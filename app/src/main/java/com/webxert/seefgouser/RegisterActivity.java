@@ -51,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (checkForEmptyFields(emailET.getText().toString().trim(), passwordET.getText().toString().trim(), userNameET.getText().toString().trim())) {
                     if (checkValidEmail(emailET.getText().toString().trim())) {
                         if (checkValidPassword(passwordET.getText().toString().trim())) {
+
                             callService();
                         } else {
                             showAlertBox("Password should not less than 6 letters");
@@ -129,7 +130,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 Paper.book().write(ConstantManager.CURRENT_USER, user);
 
+                                User dc_User = new User();
+                                dc_User.setUser_email(emailET.getText().toString());
+                                dc_User.setUser_password(passwordET.getText().toString());
+                                Paper.book().write(ConstantManager.USER_DECRYPTED_OBJECT, dc_User);
                                 Log.e("Wrote", Paper.book().read(ConstantManager.CURRENT_USER).toString());
+
                                 Common.savePrefs(emailET.getText().toString(), passwordET.getText().toString(), RegisterActivity.this);
                                 startActivity(new Intent(RegisterActivity.this, Home.class));
                                 finish();

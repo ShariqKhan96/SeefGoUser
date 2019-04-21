@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -38,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
     FrameLayout submit_btn;
 
     User user;
+    User user_decrypted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
         setContentView(R.layout.activity_profile);
         editButtonListener = this;
         user = Paper.book().read(ConstantManager.CURRENT_USER);
+        user_decrypted = Paper.book().read(ConstantManager.USER_DECRYPTED_OBJECT);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         TextView toolbarTv = toolbar.findViewById(R.id.toolbarText);
@@ -63,9 +66,10 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
         edit = toolbar.findViewById(R.id.edit);
         submit_btn = findViewById(R.id.submit_btn);
 
+
         nameET.setText(user.getUser_name());
         emailET.setText(user.getUser_email());
-        passwordET.setText("(md5)=>" + user.getUser_password());
+        passwordET.setText(user_decrypted.getUser_password());
 
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,13 +85,19 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
                                 dialog.dismiss();
                                 try {
                                     JSONObject root = new JSONObject(response);
+                                    Toast.makeText(ProfileActivity.this, "" + root.getString("message"), Toast.LENGTH_SHORT).show();
                                     if (root.getString("status").equals("1")) {
                                         user.setUser_email(emailET.getText().toString());
                                         user.setUser_name(nameET.getText().toString());
 
                                         user.setUser_password(passwordET.getText().toString());
+
+                                        user_decrypted.setUser_email(emailET.getText().toString());
+                                        user_decrypted.setUser_password(passwordET.getText().toString());
+                                        Paper.book().delete(ConstantManager.USER_DECRYPTED_OBJECT);
                                         Paper.book().delete(ConstantManager.CURRENT_USER);
                                         Paper.book().write(ConstantManager.CURRENT_USER, user);
+                                        Paper.book().write(ConstantManager.USER_DECRYPTED_OBJECT, user_decrypted);
                                         Home.profileCredentialsChangedListener.onChanged();
                                     }
                                 } catch (JSONException e) {
@@ -99,7 +109,8 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         dialog.dismiss();
-                        Toast.makeText(ProfileActivity.this, "" + error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("Error", error.getLocalizedMessage());
+                        Toast.makeText(ProfileActivity.this, "" + error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 
                     }
                 }) {
@@ -108,7 +119,8 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
                         Map<String, String> map = new HashMap<>();
                         map.put("name", nameET.getText().toString());
                         map.put("email", emailET.getText().toString());
-                        map.put("password", passwordET.getText().toString());
+                        Log.e("Password", passwordET.getText().toString());
+                        map.put("pass", passwordET.getText().toString());
                         map.put("id", user.getUser_id());
                         map.put("check", 1 + "");
                         return map;
@@ -117,19 +129,19 @@ public class ProfileActivity extends AppCompatActivity implements EditButtonList
                 Volley.newRequestQueue(ProfileActivity.this).add(request);
             }
 
-    });
+        });
 
         edit.setOnClickListener(new View.OnClickListener()
 
-    {
-        @Override
-        public void onClick (View view){
-        editButtonListener.onEditButtonPressed();
+        {
+            @Override
+            public void onClick(View view) {
+                editButtonListener.onEditButtonPressed();
+            }
+        });
+
+
     }
-    });
-
-
-}
 
     @Override
     public void onEditButtonPressed() {

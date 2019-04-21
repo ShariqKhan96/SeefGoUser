@@ -152,7 +152,7 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelAdapter.MyVH> {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<>();
-                // map.put("id", parcels.get(adapterPosition).)
+                map.put("id", parcels.get(adapterPosition).getPackage_id());
                 return map;
             }
         };

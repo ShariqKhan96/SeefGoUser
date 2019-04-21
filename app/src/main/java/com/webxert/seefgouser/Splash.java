@@ -139,6 +139,7 @@ public class Splash extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CHECK_SETTINGS) {
             Toast.makeText(this, "Location on", Toast.LENGTH_SHORT).show();
+            startService(new Intent(this, LocationService.class));
             checkSession();
         }
     }
