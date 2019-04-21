@@ -87,9 +87,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:textColorHint="@color/accentHintColor"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/colorAccent"
-            android:textColorHint="@color/accentHintColor">
+            app:passwordToggleTint="@color/colorAccent">
 
             <EditText
                 android:id="@+id/password"
